@@ -1,0 +1,6 @@
+node_modules/
+dist/
+publish/
+emergency_backup_database.sqlite
+.DS_Store
+*.log

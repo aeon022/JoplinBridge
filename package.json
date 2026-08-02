@@ -1,0 +1,39 @@
+{
+  "name": "com.aeon022.joplinbridge",
+  "version": "1.0.0",
+  "description": "Bidirectional synchronization plugin between local Markdown files and Joplin notes",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "dist": "webpack --mode production",
+    "pack": "npm run dist && node scripts/pack.js",
+    "test": "ts-node tests/utils.test.ts"
+  },
+  "keywords": [
+    "joplin-plugin",
+    "sync",
+    "markdown",
+    "vim"
+  ],
+  "author": "aeon022",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "@types/tar": "^6.1.13",
+    "copy-webpack-plugin": "^12.0.2",
+    "tar": "^7.5.22",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}
