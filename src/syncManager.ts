@@ -77,7 +77,6 @@ export class SyncManager {
       const content = await fs.readFile(filePath, 'utf8');
       const { frontmatter, body } = parseFrontmatter(content);
 
-      // Never sync empty files if content reading failed
       const title = this.extractTitleFromContent(body, path.basename(filePath, '.md'));
       const parentId = await this.getOrCreateJoplinFolderForFile(filePath, syncDir);
 
@@ -96,7 +95,6 @@ export class SyncManager {
         if (existingNote) {
           const joplinUpdatedMs = existingNote.updated_time || existingNote.user_updated_time || 0;
           if (stats.mtimeMs > joplinUpdatedMs) {
-            // Local file is newer -> update Joplin note
             this.lockNoteId(existingNote.id);
             try {
               await joplin.data.put(['notes', existingNote.id], null, {
@@ -109,12 +107,10 @@ export class SyncManager {
               setTimeout(() => this.unlockNoteId(existingNote.id), 300);
             }
           } else if (joplinUpdatedMs > stats.mtimeMs) {
-            // Joplin note is newer -> update local file
             await this.writeToLocalFile(filePath, frontmatter.joplin_id, existingNote.body || '', existingNote.updated_time);
             console.error(`[JoplinBridge] Joplin note newer: updated local file ${filePath}`);
           }
         } else {
-          // Recreate in Joplin
           const newNote = await joplin.data.post(['notes'], null, {
             title,
             body,
@@ -132,7 +128,6 @@ export class SyncManager {
           }
         }
       } else {
-        // Unlinked local file -> create new note in Joplin with full body
         const newNote = await joplin.data.post(['notes'], null, {
           title,
           body,
@@ -176,12 +171,11 @@ export class SyncManager {
   }
 
   /**
-   * Handles Joplin note change event (Joplin -> Vim).
-   * Prevents race condition overwrites when noteId is locked.
+   * Handles Joplin note change or deletion event (Joplin -> Vim).
+   * Automatically deletes local .md file when corresponding note is deleted in Joplin.
    */
   public async handleJoplinNoteChange(noteId: string): Promise<void> {
     if (this.activeNoteIds.has(noteId)) {
-      // Locked due to ongoing creation/write -> ignore event
       return;
     }
 
@@ -191,10 +185,25 @@ export class SyncManager {
     const mappedFilePath = this.trackedNotes.get(noteId);
 
     try {
-      const note = await joplin.data.get(['notes', noteId], {
-        fields: ['id', 'title', 'body', 'updated_time', 'parent_id']
-      });
-      if (!note) return;
+      let note: any = null;
+      try {
+        note = await joplin.data.get(['notes', noteId], {
+          fields: ['id', 'title', 'body', 'updated_time', 'parent_id']
+        });
+      } catch {
+        note = null; // Note was deleted in Joplin
+      }
+
+      // Note was deleted in Joplin -> remove local file on disk
+      if (!note) {
+        if (mappedFilePath && (await fs.pathExists(mappedFilePath))) {
+          this.lockPath(mappedFilePath);
+          await fs.remove(mappedFilePath);
+          this.trackedNotes.delete(noteId);
+          console.error(`[JoplinBridge] Removed local file ${mappedFilePath} because Joplin note ${noteId} was deleted.`);
+        }
+        return;
+      }
 
       const noteTitle = note.title && note.title.trim() ? note.title.trim() : 'Untitled';
       const sanitizedTitle = sanitizeFilename(noteTitle);
@@ -364,7 +373,6 @@ export class SyncManager {
     const existingContent = await fs.readFile(filePath, 'utf8').catch(() => '');
     const { frontmatter, body: existingBody } = parseFrontmatter(existingContent);
 
-    // Safeguard: Do NOT overwrite an existing non-empty local body with an empty body
     let finalBody = body;
     if ((!body || body.trim() === '') && (existingBody && existingBody.trim() !== '')) {
       finalBody = existingBody;
