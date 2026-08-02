@@ -3,7 +3,7 @@
 [![Joplin Plugin](https://img.shields.io/badge/Joplin-Plugin-blue.svg)](https://joplinapp.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Donate](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-orange.svg)](#-sponsoring--donations)
+[![Support on Polar](https://img.shields.io/badge/Support_JoplinBridge-Polar-0066FF.svg?style=flat-square&logo=polar)](https://buy.polar.sh/polar_cl_BN6xwyJH2Drn6WuzvV49E2KCGauvtoTHixD3w1hCpSH)
 
 **JoplinBridge** is a lightweight, high-performance Joplin plugin designed for developers and power users who want seamless, real-time, **bidirectional synchronization** between local Markdown files (edited in Vim, Neovim, VS Code, Helix, Obsidian, etc.) and Joplin Notebooks.
 
@@ -47,15 +47,13 @@
 
 ---
 
-## ☕ Sponsoring & Donations
+## 💜 Support & Sponsoring
 
 Is **JoplinBridge** helping your daily developer workflow? Support further development and maintenance!
 
-- ☕ **Buy Me a Coffee**: [buymeacoffee.com/your-name](https://buymeacoffee.com)
-- 💖 **GitHub Sponsors**: [github.com/sponsors/your-name](https://github.com/sponsors)
-- 💳 **PayPal**: [paypal.me/your-name](https://paypal.me)
+👉 **[Support JoplinBridge on Polar](https://buy.polar.sh/polar_cl_BN6xwyJH2Drn6WuzvV49E2KCGauvtoTHixD3w1hCpSH)**
 
-*Including donation buttons in open-source Joplin plugins is highly welcomed by the community to ensure long-term plugin maintenance.*
+*Including support links in open-source Joplin plugins is highly welcomed by the community to ensure long-term plugin maintenance.*
 
 ---
 

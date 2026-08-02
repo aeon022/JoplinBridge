@@ -23,7 +23,7 @@ joplin.plugins.register({
         }
       });
 
-      // Register Simple, Reliable Command & Dialog
+      // Register Simple, Reliable Command & Dialog with Polar Support Link
       try {
         const dialogHandle = await joplin.views.dialogs.create('addSyncFolderDialog');
         await joplin.views.dialogs.setHtml(
@@ -38,6 +38,10 @@ joplin.plugins.register({
               <label style="display: block; font-size: 12px; margin-bottom: 6px; font-weight: bold; color: #333;">Ordnerpfad:</label>
               <input type="text" id="folderPathInput" name="folderPath" style="width: 100%; padding: 10px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="/Users/username/Projects/my-app/docs" autofocus />
             </form>
+
+            <p style="font-size: 11px; color: #888; margin-top: 20px; margin-bottom: 0; text-align: center;">
+              💜 Gefällt dir JoplinBridge? <a href="https://buy.polar.sh/polar_cl_BN6xwyJH2Drn6WuzvV49E2KCGauvtoTHixD3w1hCpSH" target="_blank" style="color: #0066ff; text-decoration: none; font-weight: bold;">Entwicklung auf Polar unterstützen</a>
+            </p>
           </div>
           `
         );
