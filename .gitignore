@@ -4,3 +4,5 @@ publish/
 emergency_backup_database.sqlite
 .DS_Store
 *.log
+AGENTS.md
+MASTER-KONZEPT.md
