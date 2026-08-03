@@ -4,10 +4,10 @@
   "app_min_version": "2.8",
   "name": "JoplinBridge",
   "version": "1.0.0",
-  "description": "Bidirectional sync plugin between local Markdown files (e.g. Vim) and Joplin notes",
+  "description": "Bidirectional synchronization plugin between local Markdown files (e.g. Vim) and Joplin notes",
   "author": "aeon022",
-  "homepage_url": "https://github.com/aeon022/joplinbridge",
-  "repository_url": "https://github.com/aeon022/joplinbridge",
+  "homepage_url": "https://github.com/aeon022/JoplinBridge",
+  "repository_url": "https://github.com/aeon022/JoplinBridge",
   "keywords": [
     "joplin-plugin",
     "sync",
@@ -16,7 +16,5 @@
   ],
   "categories": [
     "integrations"
-  ],
-  "screenshots": [],
-  "icons": {}
+  ]
 }
