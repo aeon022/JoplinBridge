@@ -4,8 +4,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Support on Polar](https://img.shields.io/badge/Support_JoplinBridge-Polar-0066FF.svg?style=flat-square&logo=polar)](https://buy.polar.sh/polar_cl_BN6xwyJH2Drn6WuzvV49E2KCGauvtoTHixD3w1hCpSH)
+[![Created by abteilung83](https://img.shields.io/badge/Crafted%20by-abteilung83-black.svg)](https://github.com/aeon022)
 
-**JoplinBridge** is a lightweight, high-performance Joplin plugin designed for developers and power users who want seamless, real-time, **bidirectional synchronization** between local Markdown files (edited in Vim, Neovim, VS Code, Helix, Obsidian, etc.) and Joplin Notebooks.
+**JoplinBridge** is a lightweight, high-performance Joplin plugin developed by **abteilung83** for developers and power users who want seamless, real-time, **bidirectional synchronization** between local Markdown files (edited in Vim, Neovim, VS Code, Helix, Obsidian, etc.) and Joplin Notebooks.
 
 ---
 
@@ -31,7 +32,7 @@
 
 ---
 
-## 🚀 Usage
+## 🚀 Quickstart & Tutorial
 
 ### 1. Adding a Local Sync Folder
 1. Open Joplin.
@@ -53,7 +54,13 @@ Is **JoplinBridge** helping your daily developer workflow? Support further devel
 
 👉 **[Support JoplinBridge on Polar](https://buy.polar.sh/polar_cl_BN6xwyJH2Drn6WuzvV49E2KCGauvtoTHixD3w1hCpSH)**
 
-*Including support links in open-source Joplin plugins is highly welcomed by the community to ensure long-term plugin maintenance.*
+---
+
+## 🏢 About abteilung83
+
+**JoplinBridge** is engineered and maintained by **abteilung83** — specializing in developer tooling, workflow automation, and open-source integrations.
+
+- **GitHub**: [@aeon022](https://github.com/aeon022)
 
 ---
 
