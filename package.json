@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Bidirectional synchronization plugin between local Markdown files and Joplin notes",
   "main": "dist/index.js",
+  "files": [
+    "publish/*.jpl",
+    "dist/**/*",
+    "manifest.json"
+  ],
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
