@@ -2,7 +2,7 @@ import joplin from 'api';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { parseFrontmatter, stringifyFrontmatter, sanitizeFilename } from './utils';
-import { getSyncDirs, isSyncEnabled } from './settings';
+import { getSyncDirs, isSyncEnabled, getRootNotebookName } from './settings';
 
 export class SyncManager {
   private activeWrites = new Set<string>();
@@ -274,15 +274,19 @@ export class SyncManager {
    * Resolves or creates matching Joplin notebook hierarchy for a local file path.
    */
   private async getOrCreateJoplinFolderForFile(filePath: string, syncDir: string): Promise<string> {
+    // Used to seed parentId from joplin.workspace.selectedFolder() — whatever
+    // notebook happened to be open in the sidebar at the moment a sync
+    // directory was FIRST synced silently became the permanent parent for
+    // its root notebook (cached in folderPathToIdMap/folderToSyncDirMap from
+    // then on). That's how a folder like "documents" could end up nested
+    // under an unrelated, arbitrary notebook instead of somewhere deliberate:
+    // nothing pinned it, it just inherited whatever the UI happened to be
+    // showing. Replaced with an explicit, opt-in root notebook setting —
+    // deterministic regardless of sidebar state, defaults to top level.
     let parentId = '';
-
-    try {
-      const activeFolder = await joplin.workspace.selectedFolder();
-      if (activeFolder && activeFolder.id) {
-        parentId = activeFolder.id;
-      }
-    } catch {
-      // ignore
+    const rootNotebookName = await getRootNotebookName();
+    if (rootNotebookName) {
+      parentId = await this.ensureJoplinFolder(rootNotebookName, '');
     }
 
     const rootFolderName = path.basename(path.resolve(syncDir));

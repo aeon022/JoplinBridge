@@ -2,6 +2,7 @@ import joplin from 'api';
 
 export const SETTING_SYNC_DIRS = 'syncDirectories';
 export const SETTING_SYNC_ENABLED = 'syncEnabled';
+export const SETTING_ROOT_NOTEBOOK = 'rootNotebookName';
 export const SETTING_SECTION_NAME = 'joplinBridgeSettings';
 
 export async function registerSettings(): Promise<void> {
@@ -27,10 +28,31 @@ export async function registerSettings(): Promise<void> {
         section: SETTING_SECTION_NAME,
         label: 'Enable Sync',
         description: 'Toggle bidirectional synchronization.'
+      },
+      [SETTING_ROOT_NOTEBOOK]: {
+        value: '',
+        type: 2, // String
+        public: true,
+        section: SETTING_SECTION_NAME,
+        label: 'Root Notebook (optional)',
+        description: 'If set, every synced folder is created as a sub-notebook under this notebook (created if it doesn\'t exist). Leave empty to create synced folders at the top level. Previously the first sync of a new folder nested it under whichever notebook happened to be open in the sidebar at that moment — this setting replaces that with a fixed, predictable location.'
       }
     });
   } catch (err) {
     console.error('[JoplinBridge] Error registering settings:', err);
+  }
+}
+
+/**
+ * Returns the configured root notebook name, or '' if unset (top level).
+ */
+export async function getRootNotebookName(): Promise<string> {
+  try {
+    const raw = await joplin.settings.value(SETTING_ROOT_NOTEBOOK);
+    return typeof raw === 'string' ? raw.trim() : '';
+  } catch (err) {
+    console.error('[JoplinBridge] Error reading root notebook setting:', err);
+    return '';
   }
 }
 
