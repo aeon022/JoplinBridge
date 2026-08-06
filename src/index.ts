@@ -26,6 +26,10 @@ joplin.plugins.register({
       // Register Simple, Reliable Command & Dialog with Polar Support Link
       try {
         const dialogHandle = await joplin.views.dialogs.create('addSyncFolderDialog');
+        // Default fit-to-content shrinks the dialog to its natural width,
+        // which cut off the input placeholders (especially the Notebook
+        // field's longer hint text). 90vw/80vh instead of shrink-wrapped.
+        await joplin.views.dialogs.setFitToContent(dialogHandle, false);
         await joplin.views.dialogs.setHtml(
           dialogHandle,
           `
