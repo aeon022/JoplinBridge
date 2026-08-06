@@ -19,7 +19,7 @@ export async function registerSettings(): Promise<void> {
         public: true,
         section: SETTING_SECTION_NAME,
         label: 'Local Sync Directories',
-        description: 'One entry per line (or comma-separated): an absolute path, optionally followed by |NotebookName to root that folder under a specific notebook (use Parent/Child for a nested notebook, e.g. |MISSIONCTL/Marketing). E.g. /path/to/missionctl/postctl/documents|MISSIONCTL/Marketing or /path/to/privat/docs|Uni. Entries without |NotebookName fall back to the Root Notebook default below.'
+        description: 'One entry per line (or comma-separated): an absolute path, optionally followed by |NotebookName to root that folder under a specific notebook — use Parent/Child for a nested one, e.g. |MISSIONCTL/Marketing. Example: /Users/you/missionctl/postctl/documents|MISSIONCTL/Marketing and /Users/you/privat/docs|Uni on separate lines put each folder under its own notebook. Entries without |NotebookName fall back to Root Notebook (default) below. Note: this only affects where a NEW folder is created/matched — an already-synced folder won\'t move on its own; point |NotebookName at its current location to keep it put, or drag it in the sidebar to relocate it.'
       },
       [SETTING_SYNC_ENABLED]: {
         value: true,
@@ -35,7 +35,7 @@ export async function registerSettings(): Promise<void> {
         public: true,
         section: SETTING_SECTION_NAME,
         label: 'Root Notebook (default)',
-        description: 'Fallback root notebook for any sync directory that doesn\'t specify its own |NotebookName. Leave empty to create those at the top level. Previously the first sync of a new folder nested it under whichever notebook happened to be open in the sidebar at that moment — this setting (and the per-directory override above) replaces that with a fixed, predictable location.'
+        description: 'Fallback root notebook for any sync directory above that doesn\'t specify its own |NotebookName. Supports Parent/Child for a nested notebook. Leave empty to create those at the top level. Previously the first sync of a new folder nested it under whichever notebook happened to be open in the sidebar at that moment — this setting (and the per-directory override above) replaces that with a fixed, predictable location.'
       }
     });
   } catch (err) {

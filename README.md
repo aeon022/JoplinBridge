@@ -38,13 +38,48 @@
 1. Open Joplin.
 2. Go to **Tools** $\rightarrow$ **JoplinBridge: Add Local Sync Folder...**.
 3. Paste the absolute path to your local project folder (e.g. `/Users/username/Projects/my-app/docs`).
-4. Click **OK**. JoplinBridge will automatically index local Markdown files and create corresponding Joplin notebooks and notes.
+4. Optionally type a **Notebook** — start typing and existing notebooks (including nested ones, e.g. `MISSIONCTL/Marketing`) show up as suggestions. Pick one, or type a new name/path to create it. Leave empty to use the default from Settings, or the top level if that's empty too.
+5. Click **OK**. JoplinBridge will automatically index local Markdown files and create corresponding Joplin notebooks and notes.
 
 > **macOS Finder Tip**: Right-click any folder in Finder, hold the **Option key (`⌥`)**, and click **"Copy as Pathname"**.
 
 ### 2. Editing Files
 - **In Vim / VS Code**: Edit any `.md` file inside your synced folder and save. The corresponding note in Joplin updates instantly.
 - **In Joplin**: Create or edit a note inside the synced notebook. The local `.md` file updates or is automatically created on your disk.
+
+---
+
+## 📍 Choosing Where a Synced Folder Lands
+
+Each local folder you sync gets its own root notebook in Joplin (named after the folder itself, e.g. a folder called `documents` becomes a notebook called `documents`). By default that notebook is created at the **top level**. If you have several projects — say a work suite and a personal notes folder — you'll usually want each one filed under a different parent notebook instead of all landing at the top level side by side.
+
+There are two ways to control this, and they combine:
+
+### Per-folder, via the Add dialog
+The **Notebook** field in **Tools → JoplinBridge: Add Local Sync Folder...** accepts:
+- A single name, e.g. `missionctl` — creates/uses a top-level notebook with that name.
+- A nested path, e.g. `MISSIONCTL/Marketing` — creates/uses `Marketing` as a *child* of `MISSIONCTL`, walking (or creating) each level. This is what you want if the target notebook is itself nested somewhere.
+- Empty — falls back to the default below.
+
+The field autocompletes against every notebook that already exists (fetched fresh each time you open the dialog), so with many notebooks you can search instead of retyping an exact name/path from memory. Typing something that doesn't match an existing suggestion just creates a new notebook with that name/path.
+
+### Per-folder, via Settings
+Same thing, without the dialog: in **Tools → Options → JoplinBridge → Local Sync Directories**, each line is a path, optionally followed by `|NotebookName`:
+
+```
+/Users/you/Developing/missionctl/postctl/documents|MISSIONCTL/Marketing
+/Users/you/Privat/docs|Uni
+/Users/you/Scratch/notes
+```
+
+The third line has no `|`, so it falls back to the default root notebook (next section) — or the top level, if that's unset too. This is the fastest way to review or bulk-edit many mappings at once.
+
+### Global default
+**Tools → Options → JoplinBridge → Root Notebook (default)** — the fallback for any sync directory that doesn't specify its own `|NotebookName`. Leave empty to create those at the top level.
+
+### Notes on existing folders
+- These settings only decide where a folder's notebook is **created or matched** — they don't retroactively move a folder you already synced without one. If a synced notebook is already sitting somewhere and you now want to lock that in (or move it), set the matching `|NotebookName`/nested path so it resolves to the *same* existing notebook — otherwise a mismatched setting can create a **new, duplicate** notebook and migrate your already-tracked notes into it on the next sync.
+- To move an already-misplaced notebook, either drag it in the Joplin sidebar, or set the `|NotebookName` override to exactly where you want it — pointing it at an *existing* notebook resolves to that one instead of creating a new one.
 
 ---
 
