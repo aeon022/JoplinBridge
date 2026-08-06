@@ -285,9 +285,16 @@ export class SyncManager {
     // (falling back to a global default) — deterministic regardless of
     // sidebar state, so different sync dirs (e.g. missionctl vs. privat)
     // can each land under their own notebook.
+    // Supports a nested path like "MISSIONCTL/Marketing" — each segment is
+    // resolved (or created) one level at a time so it lands on the exact
+    // existing notebook chain instead of only ever matching a top-level
+    // notebook with that name.
     let parentId = '';
     if (rootNotebookName) {
-      parentId = await this.ensureJoplinFolder(rootNotebookName, '');
+      const rootParts = rootNotebookName.split('/').map(p => p.trim()).filter(Boolean);
+      for (const part of rootParts) {
+        parentId = await this.ensureJoplinFolder(part, parentId);
+      }
     }
 
     const rootFolderName = path.basename(path.resolve(syncDir));

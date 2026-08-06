@@ -19,7 +19,7 @@ export async function registerSettings(): Promise<void> {
         public: true,
         section: SETTING_SECTION_NAME,
         label: 'Local Sync Directories',
-        description: 'One entry per line (or comma-separated): an absolute path, optionally followed by |NotebookName to root that folder under a specific notebook. E.g. /path/to/missionctl/postctl/documents|missionctl or /path/to/privat/docs|Uni. Entries without |NotebookName fall back to the Root Notebook default below.'
+        description: 'One entry per line (or comma-separated): an absolute path, optionally followed by |NotebookName to root that folder under a specific notebook (use Parent/Child for a nested notebook, e.g. |MISSIONCTL/Marketing). E.g. /path/to/missionctl/postctl/documents|MISSIONCTL/Marketing or /path/to/privat/docs|Uni. Entries without |NotebookName fall back to the Root Notebook default below.'
       },
       [SETTING_SYNC_ENABLED]: {
         value: true,
