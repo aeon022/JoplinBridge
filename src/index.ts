@@ -37,6 +37,9 @@ joplin.plugins.register({
             <form name="folderForm" style="margin-top: 15px;">
               <label style="display: block; font-size: 12px; margin-bottom: 6px; font-weight: bold; color: #333;">Ordnerpfad:</label>
               <input type="text" id="folderPathInput" name="folderPath" style="width: 100%; padding: 10px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="/Users/username/Projects/my-app/docs" autofocus />
+
+              <label style="display: block; font-size: 12px; margin-bottom: 6px; margin-top: 12px; font-weight: bold; color: #333;">Notebook (optional):</label>
+              <input type="text" id="notebookInput" name="notebook" style="width: 100%; padding: 10px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="z.B. missionctl — leer = Standard-Notebook aus den Einstellungen" />
             </form>
 
             <p style="font-size: 11px; color: #888; margin-top: 20px; margin-bottom: 0; text-align: center;">
@@ -54,16 +57,17 @@ joplin.plugins.register({
             const result = await joplin.views.dialogs.open(dialogHandle);
             if (result.id === 'ok' && result.formData && result.formData.folderForm && result.formData.folderForm.folderPath) {
               const pathToAdd = result.formData.folderForm.folderPath.trim();
+              const notebookToAdd = (result.formData.folderForm.notebook || '').trim();
               if (pathToAdd) {
-                await addSyncDir(pathToAdd);
+                await addSyncDir(pathToAdd, notebookToAdd);
                 const updatedDirs = await getSyncDirs();
-                
+
                 setTimeout(() => {
                   syncManager.bootstrapSync().catch(err => console.error('[JoplinBridge] Sync error:', err));
                   fileWatcher.start(updatedDirs);
                 }, 100);
 
-                console.error(`[JoplinBridge] Added new sync directory: ${pathToAdd}`);
+                console.error(`[JoplinBridge] Added new sync directory: ${pathToAdd}${notebookToAdd ? ` (notebook: ${notebookToAdd})` : ''}`);
               }
             }
           }

@@ -2,7 +2,7 @@ import joplin from 'api';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { parseFrontmatter, stringifyFrontmatter, sanitizeFilename } from './utils';
-import { getSyncDirs, isSyncEnabled, getRootNotebookName } from './settings';
+import { getSyncDirEntries, isSyncEnabled, SyncDirEntry } from './settings';
 
 export class SyncManager {
   private activeWrites = new Set<string>();
@@ -42,21 +42,21 @@ export class SyncManager {
     const enabled = await isSyncEnabled();
     if (!enabled) return;
 
-    const syncDirs = await getSyncDirs();
-    if (syncDirs.length === 0) return;
+    const syncEntries = await getSyncDirEntries();
+    if (syncEntries.length === 0) return;
 
     try {
-      console.error(`[JoplinBridge] Safe bootstrap sync for ${syncDirs.length} directories...`);
+      console.error(`[JoplinBridge] Safe bootstrap sync for ${syncEntries.length} directories...`);
 
       await this.refreshJoplinFoldersCache();
 
-      for (const syncDir of syncDirs) {
-        const safeSyncDir = path.resolve(syncDir);
+      for (const entry of syncEntries) {
+        const safeSyncDir = path.resolve(entry.dir);
         if (!(await fs.pathExists(safeSyncDir))) continue;
 
         const localFiles = await this.listMarkdownFiles(safeSyncDir);
         for (const filePath of localFiles) {
-          await this.syncSingleLocalFile(filePath, safeSyncDir);
+          await this.syncSingleLocalFile(filePath, safeSyncDir, entry.rootNotebook);
         }
       }
 
@@ -69,7 +69,7 @@ export class SyncManager {
   /**
    * Synchronizes a single local Markdown file with Joplin using Last-Write-Wins and sub-notebook mapping.
    */
-  private async syncSingleLocalFile(filePath: string, syncDir: string): Promise<void> {
+  private async syncSingleLocalFile(filePath: string, syncDir: string, rootNotebook: string): Promise<void> {
     try {
       if (!(await fs.pathExists(filePath))) return;
 
@@ -78,7 +78,7 @@ export class SyncManager {
       const { frontmatter, body } = parseFrontmatter(content);
 
       const title = this.extractTitleFromContent(body, path.basename(filePath, '.md'));
-      const parentId = await this.getOrCreateJoplinFolderForFile(filePath, syncDir);
+      const parentId = await this.getOrCreateJoplinFolderForFile(filePath, syncDir, rootNotebook);
 
       if (frontmatter.joplin_id) {
         this.trackedNotes.set(frontmatter.joplin_id, filePath);
@@ -161,13 +161,13 @@ export class SyncManager {
     const enabled = await isSyncEnabled();
     if (!enabled) return;
 
-    const syncDirs = await getSyncDirs();
-    if (syncDirs.length === 0) return;
+    const syncEntries = await getSyncDirEntries();
+    if (syncEntries.length === 0) return;
 
-    const safeSyncDir = this.findMatchingSyncDir(filePath, syncDirs);
-    if (!safeSyncDir) return;
+    const matchedEntry = this.findMatchingSyncDirEntry(filePath, syncEntries);
+    if (!matchedEntry) return;
 
-    await this.syncSingleLocalFile(filePath, safeSyncDir);
+    await this.syncSingleLocalFile(filePath, path.resolve(matchedEntry.dir), matchedEntry.rootNotebook);
   }
 
   /**
@@ -273,7 +273,7 @@ export class SyncManager {
   /**
    * Resolves or creates matching Joplin notebook hierarchy for a local file path.
    */
-  private async getOrCreateJoplinFolderForFile(filePath: string, syncDir: string): Promise<string> {
+  private async getOrCreateJoplinFolderForFile(filePath: string, syncDir: string, rootNotebookName: string): Promise<string> {
     // Used to seed parentId from joplin.workspace.selectedFolder() — whatever
     // notebook happened to be open in the sidebar at the moment a sync
     // directory was FIRST synced silently became the permanent parent for
@@ -281,10 +281,11 @@ export class SyncManager {
     // then on). That's how a folder like "documents" could end up nested
     // under an unrelated, arbitrary notebook instead of somewhere deliberate:
     // nothing pinned it, it just inherited whatever the UI happened to be
-    // showing. Replaced with an explicit, opt-in root notebook setting —
-    // deterministic regardless of sidebar state, defaults to top level.
+    // showing. Replaced with an explicit, per-directory root notebook
+    // (falling back to a global default) — deterministic regardless of
+    // sidebar state, so different sync dirs (e.g. missionctl vs. privat)
+    // can each land under their own notebook.
     let parentId = '';
-    const rootNotebookName = await getRootNotebookName();
     if (rootNotebookName) {
       parentId = await this.ensureJoplinFolder(rootNotebookName, '');
     }
@@ -419,12 +420,12 @@ export class SyncManager {
     return results;
   }
 
-  private findMatchingSyncDir(filePath: string, syncDirs: string[]): string | null {
+  private findMatchingSyncDirEntry(filePath: string, syncEntries: SyncDirEntry[]): SyncDirEntry | null {
     const normalizedFile = path.resolve(filePath);
-    for (const dir of syncDirs) {
-      const normalizedDir = path.resolve(dir);
+    for (const entry of syncEntries) {
+      const normalizedDir = path.resolve(entry.dir);
       if (normalizedFile.startsWith(normalizedDir)) {
-        return normalizedDir;
+        return { dir: normalizedDir, rootNotebook: entry.rootNotebook };
       }
     }
     return null;
