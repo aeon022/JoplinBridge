@@ -5,6 +5,7 @@ import { parseFrontmatter, stringifyFrontmatter, sanitizeFilename } from './util
 import { getSyncDirEntries, isSyncEnabled, SyncDirEntry } from './settings';
 
 export class SyncManager {
+  private bootstrapRunning = false;
   private activeWrites = new Set<string>();
   private activeNoteIds = new Set<string>(); // Lock note IDs during local/remote writes to prevent race condition
   private trackedNotes = new Map<string, string>(); // joplin_id -> absolute filePath
@@ -39,13 +40,24 @@ export class SyncManager {
    * Preserves folder and subfolder hierarchy as sub-notebooks in Joplin.
    */
   public async bootstrapSync(): Promise<void> {
-    const enabled = await isSyncEnabled();
-    if (!enabled) return;
-
-    const syncEntries = await getSyncDirEntries();
-    if (syncEntries.length === 0) return;
+    // Settings changes and the "Add Sync Folder" command can each schedule a
+    // bootstrapSync() within milliseconds of one another. Without this guard,
+    // two overlapping runs both call refreshJoplinFoldersCache() (which wipes
+    // and rebuilds the shared folder cache), so each can miss the "documents"
+    // notebook the other just created and end up creating its own duplicate.
+    if (this.bootstrapRunning) {
+      console.error('[JoplinBridge] Bootstrap sync already in progress, skipping overlapping call.');
+      return;
+    }
+    this.bootstrapRunning = true;
 
     try {
+      const enabled = await isSyncEnabled();
+      if (!enabled) return;
+
+      const syncEntries = await getSyncDirEntries();
+      if (syncEntries.length === 0) return;
+
       console.error(`[JoplinBridge] Safe bootstrap sync for ${syncEntries.length} directories...`);
 
       await this.refreshJoplinFoldersCache();
@@ -63,6 +75,8 @@ export class SyncManager {
       console.error(`[JoplinBridge] Bootstrap completed. Tracking ${this.trackedNotes.size} synced notes.`);
     } catch (err) {
       console.error('[JoplinBridge] Error during bootstrap sync:', err);
+    } finally {
+      this.bootstrapRunning = false;
     }
   }
 
