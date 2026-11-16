@@ -33,7 +33,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.11.0",
     "@types/tar": "^6.1.13",
-    "copy-webpack-plugin": "^12.0.2",
+    "copy-webpack-plugin": "^14.0.0",
     "tar": "^7.5.22",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
